@@ -23,7 +23,7 @@ jobs:
         # Add commands to build and test your application
 
     - name: Deploy to EC2
-      uses: appleboy/ssh-action@v0.6.0
+      uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USERNAME }}
