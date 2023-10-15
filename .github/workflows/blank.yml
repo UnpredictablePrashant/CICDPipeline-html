@@ -1,0 +1,29 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "$EC2_SSH_KEY" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
+
+    - name: Deploy to EC2
+      run: |
+        scp -r -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ./your-html-folder/* ubuntu@$EC2_HOST:/var/www/html/
+
+    - name: SSH into EC2 and reload Nginx
+      run: |
+        ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ubuntu@$EC2_HOST 'sudo systemctl reload nginx'
