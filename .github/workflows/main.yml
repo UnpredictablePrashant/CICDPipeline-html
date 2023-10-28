@@ -30,9 +30,9 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         port: 22
         script: |
-          mkdir -p /tmp/deploy
+          sudo mkdir -p /tmp/deploy
           cd /tmp/deploy
-          cp -r $GITHUB_WORKSPACE/* .
+          sudo cp -r $GITHUB_WORKSPACE/* .
           sudo cp -r * /var/www/html/
           cd /
-          rm -rf /tmp/deploy
+          sudo rm -rf /tmp/deploy
