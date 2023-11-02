@@ -11,7 +11,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Install dependencies
       run: |
@@ -30,13 +30,19 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         port: 22
         script: |
+          sudo rm -rf temporaryFolder/
           sudo mkdir ~/temporaryFolder
           cd ~/temporaryFolder
           pwd
+          echo "fetched pwd"
           echo $GITHUB_WORKSPACE
           echo "Received variables"
           echo ${{ github.workspace }}
           echo "Received workspace"
+          ls $GITHUB_WORKSPACE
+          echo "fetched content of github workspace variable"
+          ls ${{ github.workspace }}
+          echo "fetched content of github workspace"
           # sudo cp -r $GITHUB_WORKSPACE/* .
           # sudo cp -r * /var/www/html/
           # cd /
