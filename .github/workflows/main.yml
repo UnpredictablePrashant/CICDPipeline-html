@@ -34,7 +34,7 @@ jobs:
               pwd
               ls -al
               sudo rm -r private_key
-              sudo cp -r . /var/www/html
+              sudo cp -r * /var/www/html
               # git checkout dev &&
               # git fetch --all &&
               # git reset --hard origin/dev &&
@@ -58,4 +58,5 @@ jobs:
         port: 22
         script: |
           sudo systemctl restart nginx
+          ls -al /var/www/html/
 
