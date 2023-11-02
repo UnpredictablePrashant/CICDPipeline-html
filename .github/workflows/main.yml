@@ -21,9 +21,7 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         port: 22
         script: |
-          # Create the target directory if it doesn't exist
           sudo mkdir -p /var/www/html/
-          # Ensure the target directory has the correct permissions
           sudo chown -R ${{ secrets.EC2_USERNAME }} /var/www/html/
           sudo chmod -R 755 /var/www/html/
 
@@ -37,7 +35,7 @@ jobs:
         source: ./
         target: /var/www/html/
 
-    - name: SSH into EC2 and Restart Nginx
+    - name: Restart Nginx
       uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.EC2_HOST }}
@@ -46,7 +44,3 @@ jobs:
         port: 22
         script: |
           sudo systemctl restart nginx
-          ls -al /var/www/html/
-          ip a
-          whoami
-          pwd
