@@ -29,7 +29,10 @@ jobs:
             HOSTNAME: ${{secrets.EC2_HOST}}
             USER_NAME: ${{secrets.EC2_USERNAME}}
       run: |
-          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          echo $PRIVATE_KEY > private_key && chmod 600 private_key
+          cat private_key
+          echo $HOSTNAME
+          echo $USER_NAME
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME}
               sudo apt-get update -y
               sudo apt-get install -y nginx
