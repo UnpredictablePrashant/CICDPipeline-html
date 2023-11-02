@@ -9,9 +9,21 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+
     steps:
+    - name: Install dependencies
+      uses: actions/checkout@v4
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        port: 22
+        script: |
+          sudo apt-get update -y
+          sudo apt-get install -y nginx
+          
     - uses: actions/checkout@v4
-    - name: Checkout code
+    - name: Checkout code & Deploy to EC2
       env:
             PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
             HOSTNAME: ${{secrets.EC2_HOST}}
@@ -19,11 +31,10 @@ jobs:
       run: |
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME}
-              # Now we have got the access of EC2 and we will start the deploy .
-              # ls /home/ubuntu
-              # cd /home/ubuntu/<PROJECT_DIRECTORY>
               pwd
-              ls -al              
+              ls -al
+              sudo rm -r private_key
+              sudo cp -r . /var/www/html
               # git checkout dev &&
               # git fetch --all &&
               # git reset --hard origin/dev &&
@@ -38,7 +49,7 @@ jobs:
     #   run: |
         # Add commands to build and test your application
 
-    - name: Deploy to EC2
+    - name: Restarting Nginx
       uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.EC2_HOST }}
@@ -46,22 +57,5 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         port: 22
         script: |
-          sudo apt-get update -y
-          sudo apt-get install -y nginx
-          sudo rm -rf temporaryFolder/
-          sudo mkdir ~/temporaryFolder
-          cd ~/temporaryFolder
-          pwd
-          echo "fetched pwd"
-          echo $GITHUB_WORKSPACE
-          echo "Received variables"
-          echo ${{ github.workspace }}
-          echo "Received workspace"
-          ls $GITHUB_WORKSPACE
-          echo "fetched content of github workspace variable"
-          sudo ls ${{ github.workspace }}
-          echo "fetched content of github workspace"
-          # sudo cp -r $GITHUB_WORKSPACE/* .
-          # sudo cp -r * /var/www/html/
-          # cd /
-          # sudo rm -rf ~/temporaryFolder
+          sudo systemctl restart nginx
+
