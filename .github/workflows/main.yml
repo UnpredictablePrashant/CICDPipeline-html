@@ -32,9 +32,11 @@ jobs:
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME}
               pwd
+              whoami
               ls -al
               sudo rm -r private_key
               sudo cp -r * /var/www/html
+              ls -al /var/www/html
               # git checkout dev &&
               # git fetch --all &&
               # git reset --hard origin/dev &&
