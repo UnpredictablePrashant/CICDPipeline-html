@@ -30,6 +30,8 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         port: 22
         script: |
+          sudo apt-get update -y
+          sudo apt-get install -y nginx
           sudo rm -rf temporaryFolder/
           sudo mkdir ~/temporaryFolder
           cd ~/temporaryFolder
