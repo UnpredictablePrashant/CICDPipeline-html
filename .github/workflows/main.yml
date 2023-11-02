@@ -37,7 +37,8 @@ jobs:
               whoami
               ls -al
               sudo rm -r private_key
-              sudo cp -r * /var/www/html
+              sudo rm -r /var/www/html/index.nginx-debian.html
+              sudo cp -r * /var/www/html/
               sudo systemctl restart nginx
               echo "fetching /var/www/html"
               ls -al /var/www/html
