@@ -10,16 +10,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@v4
     - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Install dependencies
+      env:
+            PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+            HOSTNAME: ${{secrets.EC2_HOST}}
+            USER_NAME: ${{secrets.EC2_USERNAME}}
       run: |
-        sudo apt-get update
-        sudo apt-get install -y nginx
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
 
-    - name: Build and test
-      run: |
+              # Now we have got the access of EC2 and we will start the deploy .
+              cd /home/ubuntu/<PROJECT_DIRECTORY> &&
+              pwd
+              ls -al              
+              # git checkout dev &&
+              # git fetch --all &&
+              # git reset --hard origin/dev &&
+              # git pull origin dev &&
+
+    # - name: Install dependencies
+    #   run: |
+    #     sudo apt-get update
+    #     sudo apt-get install -y nginx
+
+    # - name: Build and test
+    #   run: |
         # Add commands to build and test your application
 
     - name: Deploy to EC2
