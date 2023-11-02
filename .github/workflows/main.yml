@@ -9,62 +9,22 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
-
     steps:
-    # - name: Install dependencies
-    #   uses: actions/checkout@v4
-    #   with:
-    #     host: ${{ secrets.EC2_HOST }}
-    #     username: ${{ secrets.EC2_USERNAME }}
-    #     key: ${{ secrets.EC2_SSH_KEY }}
-    #     port: 22
-    #     script: |
-    #       sudo apt-get update -y
-    #       sudo apt-get install -y nginx
-          
-    - uses: actions/checkout@v4
-    - name: Checkout code & Deploy to EC2
-      env:
-            PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-            HOSTNAME: ${{secrets.EC2_HOST}}
-            USER_NAME: ${{secrets.EC2_USERNAME}}
-      run: |
-          # echo $PRIVATE_KEY > private_key 
-          # chmod 600 private_key
-          whoami
-          pwd
-          ls -al
-          ip a
-          # ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME}
-          # ssh -i private_key ${USER_NAME}@${HOSTNAME}
-              # sudo apt-get update -y
-              # sudo apt-get install -y nginx
-              # pwd
-              # whoami
-              # ip a
-              # ls -al
-              # sudo rm -r private_key
-              # sudo rm -r /var/www/html/index.nginx-debian.html
-              # sudo cp -r * /var/www/html/
-              # sudo systemctl restart nginx
-              # echo "fetching /var/www/html"
-              # ls -al /var/www/html
-              # # git checkout dev &&
-              # # git fetch --all &&
-              # # git reset --hard origin/dev &&
-              # # git pull origin dev &&
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-    # - name: Install dependencies
-    #   run: |
-    #     sudo apt-get update
-    #     sudo apt-get install -y nginx
+    - name: Copy code to EC2
+      uses: appleboy/scp-action@v0.3.0
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        port: 22
+        source: ./
+        target: /var/www/html/
 
-    # - name: Build and test
-    #   run: |
-        # Add commands to build and test your application
-
-    - name: Restarting Nginx
-      uses: appleboy/ssh-action@v1.0.0
+    - name: SSH into EC2 and Restart Nginx
+      uses: appleboy/ssh-action@v1
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USERNAME }}
@@ -76,6 +36,3 @@ jobs:
           ip a
           whoami
           pwd
-          sudo cp -r $GITHUB_WORKSPACE .
-          ls -al
-
