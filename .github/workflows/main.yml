@@ -41,7 +41,7 @@ jobs:
           echo "Received workspace"
           ls $GITHUB_WORKSPACE
           echo "fetched content of github workspace variable"
-          ls ${{ github.workspace }}
+          sudo ls ${{ github.workspace }}
           echo "fetched content of github workspace"
           # sudo cp -r $GITHUB_WORKSPACE/* .
           # sudo cp -r * /var/www/html/
