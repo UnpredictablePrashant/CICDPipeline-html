@@ -11,16 +11,16 @@ jobs:
 
 
     steps:
-    - name: Install dependencies
-      uses: actions/checkout@v4
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USERNAME }}
-        key: ${{ secrets.EC2_SSH_KEY }}
-        port: 22
-        script: |
-          sudo apt-get update -y
-          sudo apt-get install -y nginx
+    # - name: Install dependencies
+    #   uses: actions/checkout@v4
+    #   with:
+    #     host: ${{ secrets.EC2_HOST }}
+    #     username: ${{ secrets.EC2_USERNAME }}
+    #     key: ${{ secrets.EC2_SSH_KEY }}
+    #     port: 22
+    #     script: |
+    #       sudo apt-get update -y
+    #       sudo apt-get install -y nginx
           
     - uses: actions/checkout@v4
     - name: Checkout code & Deploy to EC2
@@ -31,11 +31,15 @@ jobs:
       run: |
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME}
+              sudo apt-get update -y
+              sudo apt-get install -y nginx
               pwd
               whoami
               ls -al
               sudo rm -r private_key
               sudo cp -r * /var/www/html
+              sudo systemctl restart nginx
+              echo "fetching /var/www/html"
               ls -al /var/www/html
               # git checkout dev &&
               # git fetch --all &&
@@ -51,14 +55,14 @@ jobs:
     #   run: |
         # Add commands to build and test your application
 
-    - name: Restarting Nginx
-      uses: appleboy/ssh-action@v1.0.0
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USERNAME }}
-        key: ${{ secrets.EC2_SSH_KEY }}
-        port: 22
-        script: |
-          sudo systemctl restart nginx
-          ls -al /var/www/html/
+    # - name: Restarting Nginx
+    #   uses: appleboy/ssh-action@v1.0.0
+    #   with:
+    #     host: ${{ secrets.EC2_HOST }}
+    #     username: ${{ secrets.EC2_USERNAME }}
+    #     key: ${{ secrets.EC2_SSH_KEY }}
+    #     port: 22
+    #     script: |
+    #       sudo systemctl restart nginx
+    #       ls -al /var/www/html/
 
