@@ -34,12 +34,14 @@ jobs:
           whoami
           pwd
           ls -al
-          # sudo ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME}
-          ssh -i private_key ${USER_NAME}@${HOSTNAME}
+          ip a
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME}
+          # ssh -i private_key ${USER_NAME}@${HOSTNAME}
               sudo apt-get update -y
               sudo apt-get install -y nginx
               pwd
               whoami
+              ip a
               ls -al
               sudo rm -r private_key
               sudo rm -r /var/www/html/index.nginx-debian.html
