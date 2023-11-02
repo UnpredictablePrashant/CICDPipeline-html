@@ -24,7 +24,7 @@ jobs:
         target: /var/www/html/
 
     - name: SSH into EC2 and Restart Nginx
-      uses: appleboy/ssh-action@v1
+      uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USERNAME }}
