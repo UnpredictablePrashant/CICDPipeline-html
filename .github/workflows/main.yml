@@ -32,7 +32,9 @@ jobs:
         script: |
           sudo mkdir -p ~/temporaryFolder
           cd ~/temporaryFolder
-          sudo cp -r $GITHUB_WORKSPACE/* .
-          sudo cp -r * /var/www/html/
-          cd /
-          sudo rm -rf ~/temporaryFolder
+          pwd
+          echo $GITHUB_WORKSPACE
+          # sudo cp -r $GITHUB_WORKSPACE/* .
+          # sudo cp -r * /var/www/html/
+          # cd /
+          # sudo rm -rf ~/temporaryFolder
