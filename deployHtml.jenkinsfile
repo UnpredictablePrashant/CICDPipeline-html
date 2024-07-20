@@ -1,0 +1,53 @@
+pipeline {
+    agent any
+    
+    environment {
+        GIT_REPO = "https://github.com/UnpredictablePrashant/CICDPipeline-html.git"
+        SSH_CRED_ID = "prashant-deploy"
+        EC2_USER = "ubuntu"
+        EC_HOST = "3.110.142.165"
+    }
+
+    stages {
+        stage('Hello') {
+            steps {
+                echo 'Hello World'
+            }
+        }
+        stage ('File Creation'){
+            steps {
+                sh """
+                touch hello.txt
+                ls
+                pwd
+                """
+            }   
+        }
+        stage ('Code clone'){
+            steps{
+                git branch: 'main', url: "${env.GIT_REPO}"
+            }
+        }
+        stage('Copy to EC2'){
+            steps{
+                sshagent (credentials: ["${env.SSH_CRED_ID}"]) {
+                    sh """
+                    scp -o StrictHostKeyChecking=no -r * ${env.EC2_USER}@${env.EC_HOST}:/home/ubuntu
+                    """
+                }
+            }
+        }
+        
+        stage('Deploy to Nginx'){
+            steps{
+                sshagent (credentials: ["${env.SSH_CRED_ID}"]) {
+                    sh """
+                    ssh -o StrictHostKeyChecking=no ${env.EC2_USER}@${env.EC_HOST} '
+                        sudo cp -r /home/ubuntu/* /var/www/html
+                    '
+                    """
+                }
+            }
+        }
+    }
+}
