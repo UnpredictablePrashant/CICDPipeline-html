@@ -1,0 +1,65 @@
+pipeline {
+    agent any
+    
+    environment{
+        DOCKER_IMAGE = "prashantdey/batch9dockerjenkinshtml"
+        DOCKER_CREDENTIALS_ID = "dockerhub-pk-cred"
+        DOCKER_REGISTRY = "https://index.docker.io/v1"
+        GIT_REPO = "https://github.com/UnpredictablePrashant/SampleHTMLB9.git"
+        GIT_BRANCH = "main"
+        SSH_CREDENTIALS_ID = "prashant-ec2"
+        EC2_USER = "ubuntu"
+        EC2_HOST = "13.57.245.170"
+        HOME_DIR = "/home/ubuntu"
+        CONTAINER_NAME = "sampledockerhtml"
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git branch: "${GIT_BRANCH}", url: "${GIT_REPO}"
+            }
+        }
+        
+        stage('Build Docker image') {
+            steps{
+                script{
+                    docker.build(DOCKER_IMAGE)
+                }
+            }
+        }
+        
+        stage('Docker Push'){
+            steps{
+                script{
+                    docker.withRegistry('', DOCKER_CREDENTIALS_ID){
+                        docker.image(DOCKER_IMAGE).push()
+                    }
+                }
+            }
+        }
+        
+        stage('Deploy to EC2'){
+            steps{
+                sshagent (credentials: ['prashant-ec2']) {
+                    sh """
+                    ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} '
+                        echo "Pulling latest Docker image"
+                        sudo docker pull ${DOCKER_IMAGE}
+                        
+                        echo "Stopping any existing container..."
+                        sudo docker stop ${CONTAINER_NAME} || true
+                        sudo docker rm ${CONTAINER_NAME} || true
+                        
+                        echo "Running the container..."
+                        sudo docker run -d --name ${CONTAINER_NAME} -p 80:80 ${DOCKER_IMAGE}
+                        
+                        echo "Deployment successful!"
+                        '
+                    """
+                } 
+            }
+        }
+        
+    }
+}
