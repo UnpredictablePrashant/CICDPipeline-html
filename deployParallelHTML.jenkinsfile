@@ -1,0 +1,66 @@
+pipeline {
+    agent any
+    environment{
+        GIT_REPO = "https://github.com/UnpredictablePrashant/SampleHTMLB9.git"
+        GIT_BRANCH = "main"
+        SSH_CREDENTIALS_ID = "prashant-ec2"
+        EC2_USER = "ubuntu"
+        EC2_HOST = "13.57.245.170"
+        HOME_DIR = "/home/ubuntu"
+    }
+
+    stages {
+        stage('Checkout from the github') {
+            steps {
+                git branch: "${GIT_BRANCH}", url: "${GIT_REPO}"
+            }
+        }
+        stage('Build and test in parallel'){
+            parallel{
+                stage('Build'){
+                    steps{
+                        sh 'pwd'
+                        sh 'ls -l'
+                    }
+                }       
+                stage('Test'){
+                    steps{
+                        sh '''
+                        echo "This is test stage"
+                        whoami
+                        ls
+                        pwd
+                        '''
+                    }
+                }
+            }
+        }
+        
+        stage('Deploy'){
+            steps{
+                sshagent (credentials: ['prashant-ec2']) {
+                    sh """
+                    scp -o StrictHostKeyChecking=no -r * ${EC2_USER}@${EC2_HOST}:${HOME_DIR}
+                    ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} "sudo cp -r * /var/www/html"
+                    """
+                } 
+            }
+        }
+    }
+    
+    post {
+        success{
+            echo "Deployment is successfull"
+            sshagent (credentials: ['prashant-ec2']) {
+                    sh """
+                    ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} '
+                    sudo rm -rf *
+                    '
+                    """
+                }
+        }
+        failure{
+            echo "Deployment Failed"
+        }
+    }
+}
